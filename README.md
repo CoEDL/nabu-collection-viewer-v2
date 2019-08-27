@@ -1,7 +1,3 @@
-> # Development of this application has moved to https://github.com/CoEDL/nabu-collection-viewer-v2
->
-> ## Issues raised in this repository will be ignored.
-
 # PARADISEC COLLECTION VIEWER - Mark II
 
 - [PARADISEC COLLECTION VIEWER - Mark II](#paradisec-collection-viewer---mark-ii)
