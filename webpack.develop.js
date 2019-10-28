@@ -3,7 +3,7 @@
 const path = require("path");
 const webpack = require("webpack");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
-const CleanWebpackPlugin = require("clean-webpack-plugin");
+const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 const VueLoaderPlugin = require("vue-loader/lib/plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 
@@ -38,15 +38,18 @@ module.exports = {
         host: "0.0.0.0",
         port: 9001,
         historyApiFallback: true,
-        watchContentBase: true
+        watchOptions: {
+            watch: true,
+            poll: 1000,
+            ignored: ["node_modules", "dist"]
+        }
     },
     plugins: [
         new webpack.DefinePlugin({
             "process.env.NODE_ENV": JSON.stringify("development")
         }),
-        new CleanWebpackPlugin(["dist/*.js", "dist/*.css"], {
-            watch: true,
-            root: __dirname
+        new CleanWebpackPlugin({
+            cleanOnceBeforeBuildPatterns: ["*.js", "*.css"]
         }),
         new MiniCssExtractPlugin({
             filename: "[name].[contenthash].css"

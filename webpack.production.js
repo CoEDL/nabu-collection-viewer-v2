@@ -19,10 +19,13 @@ module.exports = {
         filename: "[name].[hash].bundle.js"
     },
     optimization: {
+        moduleIds: "hashed",
+        runtimeChunk: "single",
         splitChunks: {
             cacheGroups: {
                 vendor: {
-                    test: /node_modules/,
+                    test: /[\\/]node_modules[\\/]/,
+                    name: "vendors",
                     chunks: "all"
                 }
             }
@@ -37,21 +40,17 @@ module.exports = {
             filename: "[name].css",
             chunkFilename: "[id].css"
         }),
-        new CleanWebpackPlugin(["dist/*.js", "dist/*.css"], {
-            watch: true,
-            root: __dirname
+        new CleanWebpackPlugin({
+            cleanOnceBeforeBuildPatterns: ["*.js", "*.css"]
         }),
         new MiniCssExtractPlugin({
             filename: "[name].[contenthash].css"
         }),
         new HtmlWebpackPlugin({
-            title: "Inteja",
+            title: "Mobile Collection Viewer",
             template: "./src/index.html"
         }),
-        new VueLoaderPlugin(),
-        new webpack.ProvidePlugin({
-            introJs: ["intro.js", "introJs"]
-        })
+        new VueLoaderPlugin()
     ],
     module: {
         rules: [
