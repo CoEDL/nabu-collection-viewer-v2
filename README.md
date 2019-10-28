@@ -22,7 +22,8 @@ system. Once nodejs is setup run `npm install` to install the packages.
 
 ## Developing the application
 
-In order to develop the application you will also need https://github.com/marcolarosa/pdsc-librarybox-installer. Download it and set it up as per its instructions then use it to
+In order to develop the application you will also need https://github.com/CoEDL/data-loader.
+Download it and set it up as per its instructions then use it to
 create a file repository for use with this application.
 
 You will need datafiles from Nabu for this. Basically, start up the app and then use it to target
