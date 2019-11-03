@@ -31,7 +31,7 @@ export default {
         return {
             nChunks: 1,
             page: 0,
-            pageSize: 10,
+            pageSize: 9,
             small: window.innerWidth < 400 ? true : false
         };
     },
