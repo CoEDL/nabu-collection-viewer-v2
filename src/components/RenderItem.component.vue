@@ -1,8 +1,6 @@
 <template>
     <el-card class="style-card" shadow="always">
-        <div class="text-xl text-center my-2" v-if="item.title">
-            <a href v-on:click.prevent="filterByTitle">{{item.title}}</a>
-        </div>
+        <div class="text-xl text-center my-2" v-if="item.title">{{item.title}}</div>
         <div class="flex flex-col text-center">
             <div>
                 {{item.collectionId}} / {{item.itemId}} /
@@ -35,26 +33,6 @@ export default {
         return {
             itemData: {}
         };
-    },
-    methods: {
-        filterByTitle() {
-            this.$store.commit("setSelectedFilter", {
-                type: "title",
-                value: this.item.title
-            });
-        },
-        filterByCollection() {
-            this.$store.commit("setSelectedFilter", {
-                type: "collectionId",
-                value: this.item.collectionId
-            });
-        },
-        filterByItem() {
-            this.$store.commit("setSelectedFilter", {
-                type: "itemId",
-                value: this.item.itemId
-            });
-        }
     }
 };
 </script>
