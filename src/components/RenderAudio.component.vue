@@ -40,7 +40,7 @@
                 <div class="row">
                     <div class="col">
                         <audio controls autoplay ref="audioElement" class="style-audio-element">
-                            <source :src="item" v-for="(item, idx) of audio.item" :key="idx">Your browser does not support the
+                            <source :src="item" v-for="(item, idx) of audio.item" :key="idx" />Your browser does not support the
                             <code>audio</code> element.
                         </audio>
                     </div>
@@ -82,7 +82,7 @@ export default {
 <style lang="scss" scoped>
 .style-audio-icon {
     cursor: pointer;
-    font-size: 6em;
+    font-size: 5em;
 }
 
 .style-audio-element {

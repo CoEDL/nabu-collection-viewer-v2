@@ -3,14 +3,14 @@
         <div class="row">
             <div class="col text-center">{{image.name}}</div>
         </div>
-        <div class="row mx-2">
+        <div class="row my-2">
             <div class="col text-center">
-                <router-link :to="to">
+                <router-link :to="to" class="flex flex-row justify-around">
                     <!-- <span v-if="image.item.thumbnail">
                         <img :src="image.item.thumbnail" class="style-image">
                     </span>-->
                     <!-- <span v-if="!image.item.thumbnail"> -->
-                    <img :src="image.item.path" class="style-image">
+                    <img :src="image.item.path" class="style-image" />
                     <!-- </span> -->
                 </router-link>
             </div>
@@ -50,7 +50,7 @@ export default {
 }
 
 .style-image {
-    max-width: 100%;
+    max-height: 150px;
 }
 </style>
 

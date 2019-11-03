@@ -9,11 +9,18 @@
                         </span>
                     </span>-->
                     <!-- <span class="d-none d-sm-block"> -->
-                    <content-filter v-if="menuItems.contentFilter"/>
+                    <content-filter v-if="menuItems.contentFilter" />
                     <!-- </span> -->
-                    <router-link :to="{ path: '/'}">
-                        <el-button type v-if="menuItems.home">
-                            <i class="fas fa-home"></i>
+                    <router-link :to="{ path: '/collections'}">
+                        <el-button size="mini">
+                            <i class="fas fa-layer-group"></i>
+                            <span class="hidden md:inline-block">Browse Collections</span>
+                        </el-button>
+                    </router-link>
+                    <router-link :to="{ path: '/items'}">
+                        <el-button size="mini">
+                            <i class="fas fa-folder-open"></i>
+                            <span class="hidden md:inline-block">Browse Items</span>
                         </el-button>
                     </router-link>
                 </div>
@@ -21,7 +28,7 @@
             <span v-if="showLinks">
                 <div class="row">
                     <div class="col">
-                        <content-filter v-if="menuItems.contentFilter"/>
+                        <content-filter v-if="menuItems.contentFilter" />
                     </div>
                 </div>
             </span>
@@ -49,14 +56,12 @@ export default {
         switch (this.$route.name) {
             case "viewList":
                 this.menuItems = {
-                    contentFilter: true,
-                    home: false
+                    contentFilter: true
                 };
                 break;
             default: {
                 this.menuItems = {
-                    contentFilter: false,
-                    home: true
+                    contentFilter: false
                 };
                 break;
             }
@@ -72,7 +77,7 @@ export default {
     top: 0;
     left: 0;
     width: 100%;
-    height: 60px;
+    height: 45px;
     z-index: 2;
     background-color: #013243;
 }

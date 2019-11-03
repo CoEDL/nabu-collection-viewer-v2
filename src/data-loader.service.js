@@ -1,21 +1,21 @@
-"use strict";
+'use strict';
 
-import { flattenDeep, reduce, uniq, capitalize, orderBy } from "lodash";
+import {groupBy, reduce, uniq, capitalize, orderBy} from 'lodash';
 
 const speakerRolesToDisplay = [
-    "participant",
-    "performer",
-    "signer",
-    "singer",
-    "speaker"
+    'participant',
+    'performer',
+    'signer',
+    'singer',
+    'speaker',
 ];
 export async function loadData() {
     try {
-        let response = await fetch(mapRepositoryRoot("/repository/index.json"));
+        let response = await fetch(mapRepositoryRoot('/repository/index.json'));
         if (response.status !== 200) {
             throw new Error(response);
         }
-        let items = await response.json();
+        let {collections, items} = await response.json();
         items = postprocess(items);
         let filters = extractFilters(items);
 
@@ -24,10 +24,6 @@ export async function loadData() {
                 image.item.path = mapRepositoryRoot(image.item.path);
                 image.item.thumbnail = mapRepositoryRoot(image.item.thumbnail);
                 return image;
-            });
-            item.media = item.media.map(media => {
-                media.files = media.files.map(file => mapRepositoryRoot(file));
-                return media;
             });
             item.audio = item.audio.map(audio => {
                 audio.item = audio.item.map(file => mapRepositoryRoot(file));
@@ -43,7 +39,7 @@ export async function loadData() {
             });
             return item;
         });
-        return { items, filters };
+        return {items, collections, filters};
     } catch (error) {
         console.log(error);
     }
@@ -56,45 +52,43 @@ export async function loadData() {
                     itemId: item.itemId,
                     collectionId: item.collectionId,
                     title: item.title,
-                    type: "image",
+                    type: 'image',
                     item: image,
                     name: image.name,
                     speakers: item.speakers.map(s => s.name),
-                    ...extractClassifications(item.classifications)
+                    ...extractClassifications(item.classifications),
                 };
             });
-            images = orderBy(images, "name");
-            let audio = item.media.filter(a => a.type === "audio");
-            audio = audio.map(a => {
+            images = orderBy(images, 'name');
+            let audio = item.audio.map(a => {
                 return {
                     itemId: item.itemId,
                     collectionId: item.collectionId,
                     title: item.title,
-                    type: "audio",
+                    type: 'audio',
                     item: a.files,
                     name: a.name,
                     speakers: item.speakers.map(s => s.name),
-                    ...extractClassifications(item.classifications)
+                    ...extractClassifications(item.classifications),
                 };
             });
-            let video = item.media.filter(v => v.type === "video");
-            video = video.map(v => {
+            let video = item.video.map(v => {
                 return {
                     itemId: item.itemId,
                     collectionId: item.collectionId,
                     title: item.title,
-                    type: "video",
+                    type: 'video',
                     item: v.files,
                     name: v.name,
                     speakers: item.speakers.map(s => s.name),
-                    ...extractClassifications(item.classifications)
+                    ...extractClassifications(item.classifications),
                 };
             });
             return {
                 ...item,
                 images,
                 audio,
-                video
+                video,
             };
         });
         return items;
@@ -106,7 +100,7 @@ export async function loadData() {
             classifications: {},
             collectionId: {},
             itemId: {},
-            title: {}
+            title: {},
         };
         data.forEach(d => {
             if (d.speakers) {
@@ -131,65 +125,65 @@ export async function loadData() {
         });
         let f = [
             {
-                label: "Speakers",
+                label: 'Speakers',
                 options: Object.keys(filters.speakers)
                     .sort()
                     .map(k => {
                         return {
                             label: k,
                             value: {
-                                type: "speakers",
+                                type: 'speakers',
                                 value: k,
-                                label: `Speaker: ${k}`
-                            }
+                                label: `Speaker: ${k}`,
+                            },
                         };
-                    })
+                    }),
             },
             {
-                label: "Titles",
+                label: 'Titles',
                 options: Object.keys(filters.title)
                     .sort()
                     .map(k => {
                         return {
                             label: k,
                             value: {
-                                type: "title",
+                                type: 'title',
                                 value: k,
-                                label: `Title: ${k}`
-                            }
+                                label: `Title: ${k}`,
+                            },
                         };
-                    })
+                    }),
             },
             {
-                label: "collections",
+                label: 'collections',
                 options: Object.keys(filters.collectionId)
                     .sort()
                     .map(k => {
                         return {
                             label: k,
                             value: {
-                                type: "collectionId",
+                                type: 'collectionId',
                                 value: k,
-                                label: `Collection: ${k}`
-                            }
+                                label: `Collection: ${k}`,
+                            },
                         };
-                    })
+                    }),
             },
             {
-                label: "Items",
+                label: 'Items',
                 options: Object.keys(filters.itemId)
                     .sort()
                     .map(k => {
                         return {
                             label: k,
                             value: {
-                                type: "itemId",
+                                type: 'itemId',
                                 value: k,
-                                label: `Item: ${k}`
-                            }
+                                label: `Item: ${k}`,
+                            },
                         };
-                    })
-            }
+                    }),
+            },
         ];
 
         Object.keys(filters.classifications)
@@ -204,11 +198,13 @@ export async function loadData() {
                                 value: {
                                     type: c,
                                     value: classification,
-                                    label: `${capitalize(c)}: ${classification}`
-                                }
+                                    label: `${capitalize(
+                                        c
+                                    )}: ${classification}`,
+                                },
                             };
                         }
-                    )
+                    ),
                 });
             });
         return f;
@@ -222,10 +218,10 @@ export async function loadData() {
 export function mapRepositoryRoot(path) {
     try {
         const root =
-            process.env.NODE_ENV === "testing"
-                ? "/mobile-viewer/repository"
-                : "/repository";
-        return path.replace("/repository", root);
+            process.env.NODE_ENV === 'testing'
+                ? '/mobile-viewer/repository'
+                : '/repository';
+        return path.replace('/repository', root);
     } catch (error) {
         return path;
     }
