@@ -20,7 +20,7 @@
                     <router-link :to="{ path: '/items'}">
                         <el-button size="mini">
                             <i class="fas fa-folder-open"></i>
-                            <span class="hidden md:inline-block">Browse Items</span>
+                            <span class="hidden md:inline-block">Browse All Items</span>
                         </el-button>
                     </router-link>
                 </div>
