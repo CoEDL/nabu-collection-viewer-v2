@@ -5,7 +5,7 @@
             <i class="fal fa-volume-up"></i>
         </div>
         <div class="my-2">
-            <audio controls ref="audioElement" class="style-audio-element">
+            <audio controls ref="audioElement" class="style-audio-element inline-block">
                 <source :src="item" v-for="(item, idx) of audio.item" :key="idx" />Your browser does not support the
                 <code>audio</code> element.
             </audio>
