@@ -1,6 +1,6 @@
 'use strict';
 
-import {groupBy, reduce, uniq, capitalize, orderBy} from 'lodash';
+import {compact, groupBy, reduce, uniq, capitalize, orderBy} from 'lodash';
 
 const speakerRolesToDisplay = [
     'participant',
@@ -25,14 +25,6 @@ export async function loadData() {
                 image.item.thumbnail = mapRepositoryRoot(image.item.thumbnail);
                 return image;
             });
-            item.audio = item.audio.map(audio => {
-                audio.item = audio.item.map(file => mapRepositoryRoot(file));
-                return audio;
-            });
-            item.video = item.video.map(video => {
-                video.item = video.item.map(file => mapRepositoryRoot(file));
-                return video;
-            });
             item.documents = item.documents.map(document => {
                 document.path = mapRepositoryRoot(document.path);
                 return document;
@@ -45,7 +37,6 @@ export async function loadData() {
     }
 
     function postprocess(items) {
-        let classifications;
         items = items.map(item => {
             let images = item.images.map(image => {
                 return {
@@ -60,26 +51,37 @@ export async function loadData() {
                 };
             });
             images = orderBy(images, 'name');
-            let audio = item.audio.map(a => {
+            let audio = groupBy(item.audio, a => a.name.split('.').shift());
+            let keys = Object.keys(audio);
+            item.audio = keys.map(key => {
+                const files = compact(
+                    audio[key].map(a => mapRepositoryRoot(a.path))
+                );
                 return {
                     itemId: item.itemId,
                     collectionId: item.collectionId,
                     title: item.title,
                     type: 'audio',
-                    item: a.files,
-                    name: a.name,
+                    item: files,
+                    name: key,
                     speakers: item.speakers.map(s => s.name),
                     ...extractClassifications(item.classifications),
                 };
             });
-            let video = item.video.map(v => {
+
+            let video = groupBy(item.video, v => v.name.split('.').shift());
+            keys = Object.keys(video);
+            item.video = keys.map(key => {
+                const files = compact(
+                    video[key].map(v => mapRepositoryRoot(v.path))
+                );
                 return {
                     itemId: item.itemId,
                     collectionId: item.collectionId,
                     title: item.title,
                     type: 'video',
-                    item: v.files,
-                    name: v.name,
+                    item: files,
+                    name: key,
                     speakers: item.speakers.map(s => s.name),
                     ...extractClassifications(item.classifications),
                 };
@@ -87,8 +89,6 @@ export async function loadData() {
             return {
                 ...item,
                 images,
-                audio,
-                video,
             };
         });
         return items;
