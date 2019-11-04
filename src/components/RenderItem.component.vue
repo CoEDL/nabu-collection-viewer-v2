@@ -1,6 +1,6 @@
 <template>
     <el-card class="style-card" shadow="always">
-        <div class="text-xl text-center my-2" v-if="item.title">{{item.title}}</div>
+        <div slot="header" class="text-xl text-center my-2" v-if="item.title">{{item.title}}</div>
         <div class="flex flex-col text-center">
             <div>
                 {{item.collectionId}} / {{item.itemId}} /
