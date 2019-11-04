@@ -1,47 +1,33 @@
 <template>
     <div>
-        <div class="controls-overlay fixed-bottom py-2">
-            <div class="row">
-                <div class="col">
-                    <span @click="closeControls" class="p-2 px-4 float-right style-close">
+        <div class="controls-overlay fixed-bottom">
+            <div class="flex flex-col">
+                <div>
+                    <span @click="closeControls" class="p-2 float-right style-close">
                         <i class="fal fa-times"></i>
                     </span>
                 </div>
-            </div>
-            <div class="row text-center">
-                <div class="col">
+                <div class="text-center">
                     <span class="style-title">{{image.title}}</span>
                     <span class="style-image-name">{{image.name}}</span>
                 </div>
-            </div>
 
-            <div class="row text-center style-controls py-4">
-                <div class="col-2">
+                <div class="flex flex-row flex-grow justify-center my-5">
                     <el-button @click="start" :disabled="disablePrevious" circle>
                         <i class="fas fa-chevron-double-left fa-fw"></i>
                     </el-button>
-                </div>
-                <div class="col-2">
                     <el-button @click="back" :disabled="disablePrevious" circle>
                         <i class="fas fa-chevron-left fa-fw"></i>
                     </el-button>
-                </div>
-                <div class="col-2">
                     <el-button @click="up" circle>
                         <i class="fas fa-long-arrow-alt-up fa-fw"></i>
                     </el-button>
-                </div>
-                <div class="col-2">
                     <el-button @click="home" circle>
                         <i class="fas fa-home fa-fw"></i>
                     </el-button>
-                </div>
-                <div class="col-2">
                     <el-button @click="forward" :disabled="disableNext" circle>
                         <i class="fas fa-chevron-right fa-fw"></i>
                     </el-button>
-                </div>
-                <div class="col-2">
                     <el-button @click="end" :disabled="disableNext" circle>
                         <i class="fas fa-chevron-double-right fa-fw"></i>
                     </el-button>
@@ -112,6 +98,9 @@ export default {
 @import "assets/global-styles.scss";
 
 .controls-overlay {
+    top: 0;
+    left: 0;
+    position: fixed;
     padding: 0 15px;
     width: 100vw;
     z-index: 10000;

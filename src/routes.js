@@ -43,7 +43,7 @@ export const router = new VueRouter({
                     component: RenderImageSetComponent,
                 },
                 {
-                    path: 'image/:collectionId/:itemId/:image',
+                    path: 'images/:collectionId/:itemId/:imageName',
                     name: 'image',
                     component: ViewImageComponent,
                 },

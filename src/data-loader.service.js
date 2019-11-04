@@ -45,7 +45,7 @@ export async function loadData() {
                     title: item.title,
                     type: 'image',
                     item: image,
-                    name: image.name,
+                    name: image.name.split('.').shift(),
                     speakers: item.speakers.map(s => s.name),
                     ...extractClassifications(item.classifications),
                 };

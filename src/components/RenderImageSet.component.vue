@@ -1,27 +1,30 @@
 <template>
     <div>
-        <navbar ref="top"/>
+        <navbar ref="top" />
         <div class="style-content">
-            <div class="row mt-2 mb-4" v-if="images.length">
-                <div class="col">
-                    <div class="style-headline text-center my-2">
-                        {{images[0].title}}
-                        <div class="row">
-                            <div class="col style-item-id">
-                                {{images[0].collectionId}} /
-                                {{images[0].itemId}} /
-                                <item-information
-                                    :collectionId="images[0].collectionId"
-                                    :itemId="images[0].itemId"
-                                />
-                            </div>
+            <div class="flex flex-col" v-if="item">
+                <div class="style-headline text-center my-2">
+                    {{item.title}}
+                    <div class="row">
+                        <div class="col style-item-id">
+                            {{item.collectionId}} /
+                            {{item.itemId}} /
+                            <item-information
+                                :collectionId="item.collectionId"
+                                :itemId="item.itemId"
+                            />
                         </div>
                     </div>
                 </div>
-            </div>
-            <div v-masonry transition-duration="0s" item-selector=".item">
-                <div v-masonry-tile class="item" v-for="(item, idx) in images" :key="idx">
-                    <render-image :image="item" v-if="item.type === 'image'" class="style-tile"/>
+                <div class="flex flex-row flex-wrap justify-center">
+                    <div v-for="(image, idx) in item.images" :key="idx" class="m-2">
+                        <el-card class="box-card" shadow="always">
+                            <div slot="header" class="text-center">{{image.item.name}}</div>
+                            <router-link :to="imageLink({image})">
+                                <img :src="image.item.path" class="style-image" />
+                            </router-link>
+                        </el-card>
+                    </div>
                 </div>
             </div>
         </div>
@@ -42,25 +45,27 @@ export default {
     },
     props: {},
     data() {
-        return {
-            images: []
-        };
+        return {};
     },
-    beforeMount() {
-        let { collectionId, itemId } = this.$route.params;
-        if (!this.$store.state.items.length) {
-            this.$router.push({ name: "viewList" });
-            return;
+    computed: {
+        item: function() {
+            let { collectionId, itemId } = this.$route.params;
+            return this.$store.state.items.filter(item => {
+                return (
+                    item.collectionId === collectionId && item.itemId === itemId
+                );
+            })[0];
         }
-        this.images = this.$store.state.items.filter(item => {
-            return item.collectionId === collectionId && item.itemId === itemId;
-        })[0].images;
-        if (!this.images.length) this.$router.push({ name: "viewList" });
     },
     mounted() {
         setTimeout(() => {
             VueScrollTo.scrollTo(this.$refs["top"], 100, {});
         }, 500);
+    },
+    methods: {
+        imageLink({ image }) {
+            return `/images/${image.collectionId}/${image.itemId}/${image.name}`;
+        }
     }
 };
 </script>

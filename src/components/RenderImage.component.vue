@@ -29,17 +29,9 @@ export default {
         };
     },
     mounted() {
-        if (this.$route.name === "viewList") {
-            this.to = {
-                path: `/images/${this.image.collectionId}/${this.image.itemId}`
-            };
-        } else if (this.$route.name === "images") {
-            this.to = {
-                path: `/image/${this.image.collectionId}/${this.image.itemId}/${
-                    this.image.item.name.split(".")[0]
-                }`
-            };
-        }
+        this.to = {
+            path: `/images/${this.image.collectionId}/${this.image.itemId}`
+        };
     }
 };
 </script>
