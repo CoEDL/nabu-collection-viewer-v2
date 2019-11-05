@@ -18,17 +18,9 @@ export default {
         return {};
     },
     mounted() {
-        (async () => {
-            try {
-                let { items, collections, filters } = await loadData();
-                this.$store.commit("saveData", { items, collections });
-                this.$store.commit("setFilters", filters);
-                if (this.$route.name === "root")
-                    this.$router.push({ path: "/collections" });
-            } catch (error) {
-                console.log(error);
-            }
-        })();
+        this.$store.dispatch("loadData");
+        if (this.$route.name === "root")
+            this.$router.push({ path: "/collections" });
     }
 };
 </script>

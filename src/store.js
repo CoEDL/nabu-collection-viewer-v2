@@ -4,6 +4,7 @@ import Vue from 'vue';
 import Vuex from 'vuex';
 import {flattenDeep, orderBy} from 'lodash';
 Vue.use(Vuex);
+import {loadData} from './data-loader.service';
 
 const configuration = {
     strict: process.env.NODE_ENV !== 'production',
@@ -54,6 +55,13 @@ const configuration = {
                     item.collectionId === collectionId && item.itemId === itemId
                 );
             })[0];
+        },
+    },
+    actions: {
+        async loadData({commit}) {
+            let {items, collections, filters} = await loadData();
+            commit('saveData', {items, collections});
+            commit('setFilters', filters);
         },
     },
 };
