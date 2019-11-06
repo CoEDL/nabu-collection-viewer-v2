@@ -15,12 +15,21 @@ export default {
         Navbar
     },
     data() {
-        return {};
+        return {
+            watchers: {}
+        };
     },
     mounted() {
+        this.watchers.routeWatcher = this.$watch("$route.path", () => {
+            if (this.$route.path === "/")
+                this.$router.push({ path: "/collections" });
+        });
         this.$store.dispatch("loadData");
         if (this.$route.name === "root")
             this.$router.push({ path: "/collections" });
+    },
+    beforeDestroy() {
+        this.watchers.routeWatcher();
     }
 };
 </script>
