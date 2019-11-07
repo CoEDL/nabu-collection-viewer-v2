@@ -1,6 +1,14 @@
 'use strict';
 
-import {compact, groupBy, reduce, uniq, capitalize, orderBy} from 'lodash';
+import {
+    compact,
+    groupBy,
+    reduce,
+    uniq,
+    uniqBy,
+    capitalize,
+    orderBy,
+} from 'lodash';
 
 const speakerRolesToDisplay = [
     'participant',
@@ -17,7 +25,7 @@ export async function loadData() {
         }
         let {collections, items} = await response.json();
         items = postprocess(items);
-        let filters = extractFilters(items);
+        let filters = extractFilters({collections, items});
 
         items = items.map(item => {
             item.images = item.images.map(image => {
@@ -46,7 +54,7 @@ export async function loadData() {
                     type: 'image',
                     item: image,
                     name: image.name.split('.').shift(),
-                    speakers: item.speakers.map(s => s.name),
+                    people: item.people.map(s => s.name),
                     ...extractClassifications(item.classifications),
                 };
             });
@@ -64,7 +72,7 @@ export async function loadData() {
                     type: 'audio',
                     item: files,
                     name: key,
-                    speakers: item.speakers.map(s => s.name),
+                    people: item.people.map(s => s.name),
                     ...extractClassifications(item.classifications),
                 };
             });
@@ -82,7 +90,7 @@ export async function loadData() {
                     type: 'video',
                     item: files,
                     name: key,
-                    speakers: item.speakers.map(s => s.name),
+                    people: item.people.map(s => s.name),
                     ...extractClassifications(item.classifications),
                 };
             });
@@ -94,119 +102,75 @@ export async function loadData() {
         return items;
     }
 
-    function extractFilters(data) {
-        let filters = {
-            speakers: {},
-            classifications: {},
-            collectionId: {},
-            itemId: {},
-            title: {},
-        };
-        data.forEach(d => {
-            if (d.speakers) {
-                d.speakers.forEach(s => {
-                    if (speakerRolesToDisplay.includes(s.role))
-                        filters.speakers[s.name] = 1;
-                });
-            }
-            if (d.classifications) {
-                d.classifications.forEach(c => {
-                    Object.keys(c).forEach(key => {
-                        if (!filters.classifications[key]) {
-                            filters.classifications[key] = [];
-                        }
-                        filters.classifications[key].push(c[key]);
+    function extractFilters({collections, items}) {
+        let filters = [];
+        // items = [...collections, ...items];
+        items.forEach(item => {
+            item.people.forEach(person => {
+                if (speakerRolesToDisplay.includes(person.role))
+                    filters.push({
+                        type: 'people',
+                        value: person.name,
+                        contentType: 'item',
                     });
-                });
-            }
-            filters.collectionId[d.collectionId] = 1;
-            filters.itemId[d.itemId] = 1;
-            filters.title[d.title] = 1;
-        });
-        let f = [
-            {
-                label: 'Speakers',
-                options: Object.keys(filters.speakers)
-                    .sort()
-                    .map(k => {
-                        return {
-                            label: k,
-                            value: {
-                                type: 'speakers',
-                                value: k,
-                                label: `Speaker: ${k}`,
-                            },
-                        };
-                    }),
-            },
-            {
-                label: 'Titles',
-                options: Object.keys(filters.title)
-                    .sort()
-                    .map(k => {
-                        return {
-                            label: k,
-                            value: {
-                                type: 'title',
-                                value: k,
-                                label: `Title: ${k}`,
-                            },
-                        };
-                    }),
-            },
-            {
-                label: 'collections',
-                options: Object.keys(filters.collectionId)
-                    .sort()
-                    .map(k => {
-                        return {
-                            label: k,
-                            value: {
-                                type: 'collectionId',
-                                value: k,
-                                label: `Collection: ${k}`,
-                            },
-                        };
-                    }),
-            },
-            {
-                label: 'Items',
-                options: Object.keys(filters.itemId)
-                    .sort()
-                    .map(k => {
-                        return {
-                            label: k,
-                            value: {
-                                type: 'itemId',
-                                value: k,
-                                label: `Item: ${k}`,
-                            },
-                        };
-                    }),
-            },
-        ];
-
-        Object.keys(filters.classifications)
-            .sort()
-            .forEach(c => {
-                f.push({
-                    label: capitalize(c),
-                    options: uniq(filters.classifications[c]).map(
-                        classification => {
-                            return {
-                                label: classification,
-                                value: {
-                                    type: c,
-                                    value: classification,
-                                    label: `${capitalize(
-                                        c
-                                    )}: ${classification}`,
-                                },
-                            };
-                        }
-                    ),
+            });
+            item.classifications.forEach(c => {
+                filters.push({
+                    type: c.name,
+                    value: c.value,
+                    contentType: 'item',
                 });
             });
+            filters.push({
+                type: 'title',
+                value: item.title,
+                contentType: 'item',
+            });
+        });
+
+        collections.forEach(collection => {
+            collection.people.forEach(person => {
+                if (speakerRolesToDisplay.includes(person.role))
+                    filters.push({
+                        type: 'people',
+                        value: person.name,
+                        contentType: 'collection',
+                    });
+            });
+            collection.classifications.forEach(c => {
+                filters.push({
+                    type: c.name,
+                    value: c.value,
+                    contentType: 'collection',
+                });
+            });
+            filters.push({
+                type: 'title',
+                value: collection.title,
+                contentType: 'collection',
+            });
+        });
+        filters = uniqBy(filters, f => `${f.name}${f.value}`);
+        filters = orderBy(filters, ['name', 'value']);
+        const filterTypes = uniq(filters.map(f => f.type));
+        let f = [];
+        for (let type of filterTypes) {
+            f.push({
+                label: capitalize(type),
+                options: filters
+                    .filter(f => f.type === type)
+                    .map(f => {
+                        return {
+                            label: f.value,
+                            value: {
+                                type: type,
+                                value: f.value,
+                                label: `${capitalize(f.type)}: ${f.value}`,
+                            },
+                        };
+                    }),
+            });
+        }
         return f;
     }
 

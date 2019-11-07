@@ -3,14 +3,14 @@
         <div :class="{ 'style-dropdown px-4': showLinks }">
             <div class="row py-2">
                 <div class="col">
-                    <!-- <span class="float-right d-sm-none py-2" v-if="menuItems.contentFilter">
+                    <span class="float-right inline-block md:hidden py-2">
                         <span @click="showLinks = !showLinks">
                             <i class="fas fa-bars style-hamburger"></i>
                         </span>
-                    </span>-->
-                    <!-- <span class="d-none d-sm-block"> -->
-                    <content-filter v-if="menuItems.contentFilter" />
-                    <!-- </span> -->
+                    </span>
+                    <span class="hidden md:inline-block float-right">
+                        <content-filter v-if="menuItems.contentFilter" />
+                    </span>
                     <router-link :to="{ path: '/collections'}">
                         <el-button size="mini">
                             <i class="fas fa-layer-group"></i>
@@ -26,11 +26,7 @@
                 </div>
             </div>
             <span v-if="showLinks">
-                <div class="row">
-                    <div class="col">
-                        <content-filter v-if="menuItems.contentFilter" />
-                    </div>
-                </div>
+                <content-filter v-if="menuItems.contentFilter" />
             </span>
         </div>
     </div>
@@ -45,25 +41,30 @@ export default {
     },
     data() {
         return {
+            watchers: {},
             menuItems: {
-                contentFilter: true,
-                home: false
+                contentFilter: true
             },
             showLinks: false
         };
     },
     mounted() {
-        switch (this.$route.name) {
-            case "viewList":
+        this.watchers.filters = this.$watch("$route.path", this.toggleFilter);
+        this.toggleFilter();
+    },
+    beforeDestroy() {
+        this.watchers.filters();
+    },
+    methods: {
+        toggleFilter() {
+            if (["/collections", "/items"].includes(this.$route.path)) {
                 this.menuItems = {
                     contentFilter: true
                 };
-                break;
-            default: {
+            } else {
                 this.menuItems = {
                     contentFilter: false
                 };
-                break;
             }
         }
     }

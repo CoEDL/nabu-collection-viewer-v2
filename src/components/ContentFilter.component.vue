@@ -1,8 +1,9 @@
 <template>
-    <div>
+    <div class="inline">
         <el-select
             v-model="selectedFilter"
             placeholder="Filter by..."
+            size="small"
             class="style-select"
             clearable
             filterable
@@ -22,8 +23,9 @@
         </el-select>
 
         <span v-if="type === 'overlay'">
-            <el-button @click="dialogVisible = !dialogVisible">
+            <el-button @click="dialogVisible = !dialogVisible" size="mini">
                 <i class="fas fa-search"></i>
+                filter items and collections
             </el-button>
         </span>
         <el-dialog
@@ -49,7 +51,7 @@
                 <div v-for="item in group.options" :key="item.label">
                     <span @click="handleSelection(item.value)">{{ item.label }}</span>
                 </div>
-                <br>
+                <br />
             </div>
         </el-dialog>
     </div>
@@ -92,6 +94,7 @@ export default {
             this.dialogVisible = false;
         },
         resetFilter() {
+            console.log("reset filter");
             this.$store.commit("setSelectedFilter", undefined);
         }
     }
@@ -100,6 +103,7 @@ export default {
 
 <style lang="scss" scoped>
 .style-select {
+    margin-top: -2px;
     width: 100%;
 }
 @media only screen and (min-width: 600px) {

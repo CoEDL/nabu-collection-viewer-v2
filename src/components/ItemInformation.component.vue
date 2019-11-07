@@ -60,11 +60,11 @@ export default {
             });
         },
         speakers: function() {
-            let speakers = this.item.speakers.map(speaker => {
-                if (this.speakerRolesToDisplay.includes(speaker.role))
-                    return speaker.name;
+            let people = this.item.people.map(person => {
+                if (this.speakerRolesToDisplay.includes(person.role))
+                    return person.name;
             });
-            return compact(speakers);
+            return compact(people);
         }
     },
     data() {

@@ -13,6 +13,10 @@ const configuration = {
         collections: [],
         filters: [],
         selectedFilter: undefined,
+        backup: {
+            items: [],
+            collections: [],
+        },
     },
     mutations: {
         reset(state) {
@@ -21,17 +25,99 @@ const configuration = {
                 collections: [],
                 filters: [],
                 selectedFilter: [],
+                backup: {
+                    items: [],
+                    collections: [],
+                },
             };
         },
         saveData(state, payload) {
-            state.items = orderBy(payload.items, ['collectionId', 'itemId']);
             state.collections = orderBy(payload.collections, 'collectionId');
+            state.backup.collections = orderBy(
+                payload.collections,
+                'collectionId'
+            );
+
+            state.items = orderBy(payload.items, ['collectionId', 'itemId']);
+            state.backup.items = orderBy(payload.items, [
+                'collectionId',
+                'itemId',
+            ]);
         },
         setFilters(state, filters) {
             state.filters = [...filters];
         },
         setSelectedFilter(state, selectedFilter) {
             state.selectedFilter = selectedFilter;
+            if (selectedFilter) {
+                switch (selectedFilter.type) {
+                    case 'people':
+                        state.items = state.backup.items.filter(item => {
+                            return item.people.filter(person => {
+                                return person.name === selectedFilter.value;
+                            }).length;
+                        });
+                        state.collections = state.backup.collections.filter(
+                            collection => {
+                                return collection[selectedFilter.type].filter(
+                                    type => {
+                                        return (
+                                            type.name === selectedFilter.value
+                                        );
+                                    }
+                                ).length;
+                            }
+                        );
+                        break;
+                    case 'title':
+                        state.items = state.backup.items.filter(
+                            item => item.title === selectedFilter.value
+                        );
+                        state.collections = state.backup.collections.filter(
+                            collection =>
+                                collection.title === selectedFilter.value
+                        );
+                        break;
+                    case 'genre':
+                        state.items = state.backup.items.filter(item => {
+                            return item.classifications.filter(c => {
+                                return (
+                                    c.name === 'genre' &&
+                                    c.value === selectedFilter.value
+                                );
+                            }).length;
+                        });
+                        state.collections = state.backup.collections.filter(
+                            collection => {
+                                return collection.classifications.filter(c => {
+                                    return (
+                                        c.name === 'genre' &&
+                                        c.value === selectedFilter.value
+                                    );
+                                }).length;
+                            }
+                        );
+                        break;
+                }
+                if (state.collections.length) {
+                    let collectionIds = state.collections.map(
+                        c => c.collectionId
+                    );
+                    state.items = state.backup.items.filter(item =>
+                        collectionIds.includes(item.collectionId)
+                    );
+                } else if (state.items.length) {
+                    let collectionIds = state.items.map(
+                        item => item.collectionId
+                    );
+                    state.collections = state.backup.collections.filter(c =>
+                        collectionIds.includes(c.collectionId)
+                    );
+                }
+            } else {
+                state.items = [...state.backup.items];
+                state.collections = [...state.backup.collections];
+            }
         },
     },
     getters: {
