@@ -2,16 +2,24 @@
     <div>
         <div class="my-2">
             <div class="text-sm">Filter items:</div>
-            <div class="flex flex-row flex-wrap">
-                <el-button
-                    @click="filterItems = []"
-                    size="mini"
-                    type="text"
-                    :disabled="!filterItems.length"
-                >
-                    <i class="fas fa-ban"></i>&nbsp;reset filters
-                </el-button>
+            <el-button
+                @click="filterItems = []"
+                size="mini"
+                type="success"
+                :disabled="!filterItems.length"
+            >
+                <i class="fas fa-check"></i>&nbsp;show all items
+            </el-button>
+            <el-button
+                @click="filterAll"
+                type="warning"
+                size="mini"
+                :disabled="filterItems.length === itemFilters.length"
+            >
+                <i class="fas fa-ban"></i>&nbsp;filter all items
+            </el-button>
 
+            <div class="flex flex-row flex-wrap">
                 <el-tag
                     v-for="(item, idx) of collectionItemIds"
                     :key="idx"
@@ -22,6 +30,13 @@
                 >{{item.itemId}}</el-tag>
             </div>
         </div>
+        <el-pagination
+            :small="small"
+            layout="prev, pager,  next"
+            :page-size.sync="pageSize"
+            :current-page.sync="page"
+            :total="totalItems"
+        ></el-pagination>
         <div v-for="(chunk, idx) of chunks" :key="idx">
             <div class="flex flex-row items-center">
                 <div v-for="(item, idx) of chunk" :key="idx" class="flex-1 m-1">
@@ -43,10 +58,16 @@ export default {
     data() {
         return {
             nChunks: 1,
-            filterItems: []
+            page: 1,
+            pageSize: 9,
+            filterItems: [],
+            small: window.innerWidth < 400 ? true : false
         };
     },
     computed: {
+        totalItems: function() {
+            return this.items.length;
+        },
         items: function() {
             return this.$store.getters.itemsFlattened.filter(
                 item =>
@@ -65,7 +86,11 @@ export default {
             } else if (window.innerWidth > 1024) {
                 this.nChunks = 3;
             }
-            return chunk(this.items, this.nChunks);
+            let items = this.items.slice(
+                (this.page - 1) * this.pageSize,
+                (this.page - 1) * this.pageSize + this.pageSize
+            );
+            return chunk(items, this.nChunks);
         },
         collectionItemIds: function() {
             const itemIds = uniq(
@@ -87,6 +112,9 @@ export default {
             this.filterItems = this.filterItems.includes(item.itemId)
                 ? without(this.filterItems, item.itemId)
                 : [...this.filterItems, item.itemId];
+        },
+        filterAll() {
+            this.filterItems = this.itemFilters.map(item => item.itemId);
         }
     }
 };
