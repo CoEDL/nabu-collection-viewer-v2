@@ -8,7 +8,7 @@
                 type="success"
                 :disabled="!filterItems.length"
             >
-                <i class="fas fa-check"></i>&nbsp;show all items
+                <i class="fas fa-check"></i>&nbsp;select all items
             </el-button>
             <el-button
                 @click="filterAll"
@@ -16,7 +16,7 @@
                 size="mini"
                 :disabled="filterItems.length === itemFilters.length"
             >
-                <i class="fas fa-ban"></i>&nbsp;filter all items
+                <i class="fas fa-ban"></i>&nbsp;deselect all items
             </el-button>
 
             <div class="flex flex-row flex-wrap">
