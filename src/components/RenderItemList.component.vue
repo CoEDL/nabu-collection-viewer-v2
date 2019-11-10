@@ -31,7 +31,7 @@ export default {
         return {
             nChunks: 1,
             page: 0,
-            pageSize: 9,
+            pageSize: 10,
             small: window.innerWidth < 400 ? true : false
         };
     },
@@ -44,6 +44,7 @@ export default {
                 this.nChunks = 2;
             } else if (window.innerWidth > 1024) {
                 this.nChunks = 3;
+                this.pageSize = 9;
             }
             let items = this.$store.getters.itemsFlattened.slice(
                 (this.page - 1) * this.pageSize,
