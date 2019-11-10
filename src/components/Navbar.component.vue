@@ -3,11 +3,11 @@
         <div :class="{ 'style-dropdown px-4': showLinks }">
             <div class="row py-2">
                 <div class="col">
-                    <span class="float-right inline-block md:hidden py-2">
+                    <!-- <span class="float-right inline-block md:hidden py-2">
                         <span @click="showLinks = !showLinks">
                             <i class="fas fa-bars style-hamburger"></i>
                         </span>
-                    </span>
+                    </span>-->
                     <span class="hidden md:inline-block float-right">
                         <content-filter v-if="menuItems.contentFilter" />
                     </span>
@@ -25,9 +25,9 @@
                     </router-link>
                 </div>
             </div>
-            <span v-if="showLinks">
+            <!-- <span v-if="showLinks">
                 <content-filter v-if="menuItems.contentFilter" />
-            </span>
+            </span>-->
         </div>
     </div>
 </template>
