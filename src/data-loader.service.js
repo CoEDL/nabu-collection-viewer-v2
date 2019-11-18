@@ -1,4 +1,4 @@
-'use strict';
+"use strict";
 
 import {
     compact,
@@ -7,25 +7,25 @@ import {
     uniq,
     uniqBy,
     capitalize,
-    orderBy,
-} from 'lodash';
+    orderBy
+} from "lodash";
 
 const speakerRolesToDisplay = [
-    'participant',
-    'performer',
-    'signer',
-    'singer',
-    'speaker',
+    "participant",
+    "performer",
+    "signer",
+    "singer",
+    "speaker"
 ];
 export async function loadData() {
     try {
-        let response = await fetch(mapRepositoryRoot('/repository/index.json'));
+        let response = await fetch(mapRepositoryRoot("/repository/index.json"));
         if (response.status !== 200) {
             throw new Error(response);
         }
-        let {collections, items} = await response.json();
+        let { collections, items } = await response.json();
         items = postprocess(items);
-        let filters = extractFilters({collections, items});
+        let filters = extractFilters({ collections, items });
 
         items = items.map(item => {
             item.images = item.images.map(image => {
@@ -39,7 +39,7 @@ export async function loadData() {
             });
             return item;
         });
-        return {items, collections, filters};
+        return { items, collections, filters };
     } catch (error) {
         console.log(error);
     }
@@ -51,15 +51,17 @@ export async function loadData() {
                     itemId: item.itemId,
                     collectionId: item.collectionId,
                     title: item.title,
-                    type: 'image',
+                    type: "image",
                     item: image,
-                    name: image.name.split('.').shift(),
+                    name: image.name.split(".").shift(),
                     people: item.people.map(s => s.name),
-                    ...extractClassifications(item.classifications),
+                    categories: item.categories,
+                    languages: item.languages,
+                    ...reduce(item.classifications)
                 };
             });
-            images = orderBy(images, 'name');
-            let audio = groupBy(item.audio, a => a.name.split('.').shift());
+            images = orderBy(images, "name");
+            let audio = groupBy(item.audio, a => a.name.split(".").shift());
             let keys = Object.keys(audio);
             item.audio = keys.map(key => {
                 const files = compact(
@@ -69,15 +71,17 @@ export async function loadData() {
                     itemId: item.itemId,
                     collectionId: item.collectionId,
                     title: item.title,
-                    type: 'audio',
+                    type: "audio",
                     item: files,
                     name: key,
                     people: item.people.map(s => s.name),
-                    ...extractClassifications(item.classifications),
+                    categories: item.categories,
+                    languages: item.languages,
+                    ...reduce(item.classifications)
                 };
             });
 
-            let video = groupBy(item.video, v => v.name.split('.').shift());
+            let video = groupBy(item.video, v => v.name.split(".").shift());
             keys = Object.keys(video);
             item.video = keys.map(key => {
                 const files = compact(
@@ -87,71 +91,57 @@ export async function loadData() {
                     itemId: item.itemId,
                     collectionId: item.collectionId,
                     title: item.title,
-                    type: 'video',
+                    type: "video",
                     item: files,
                     name: key,
                     people: item.people.map(s => s.name),
-                    ...extractClassifications(item.classifications),
+                    categories: item.categories,
+                    languages: item.languages,
+                    ...reduce(item.classifications)
                 };
             });
             return {
                 ...item,
-                images,
+                images
             };
         });
         return items;
     }
 
-    function extractFilters({collections, items}) {
+    function extractFilters({ collections, items }) {
         let filters = [];
         // items = [...collections, ...items];
-        items.forEach(item => {
-            item.people.forEach(person => {
-                if (speakerRolesToDisplay.includes(person.role))
-                    filters.push({
-                        type: 'people',
-                        value: person.name,
-                        contentType: 'item',
-                    });
-            });
-            item.classifications.forEach(c => {
-                filters.push({
-                    type: c.name,
-                    value: c.value,
-                    contentType: 'item',
+        let data = { items, collections };
+        ["items", "collections"].forEach(d => {
+            data[d].forEach(item => {
+                item.people.forEach(person => {
+                    if (speakerRolesToDisplay.includes(person.role))
+                        filters.push({
+                            type: "people",
+                            value: person.name
+                        });
                 });
-            });
-            filters.push({
-                type: 'title',
-                value: item.title,
-                contentType: 'item',
+                item.classifications.forEach(c => {
+                    filters.push({
+                        type: c.name,
+                        value: c.value
+                    });
+                });
+                item.languages.forEach(l => {
+                    filters.push({ type: "language", value: l });
+                });
+                item.categories.forEach(c => {
+                    filters.push({ type: "category", value: c });
+                });
+                filters.push({
+                    type: "title",
+                    value: item.title
+                });
             });
         });
 
-        collections.forEach(collection => {
-            collection.people.forEach(person => {
-                if (speakerRolesToDisplay.includes(person.role))
-                    filters.push({
-                        type: 'people',
-                        value: person.name,
-                        contentType: 'collection',
-                    });
-            });
-            collection.classifications.forEach(c => {
-                filters.push({
-                    type: c.name,
-                    value: c.value,
-                    contentType: 'collection',
-                });
-            });
-            filters.push({
-                type: 'title',
-                value: collection.title,
-                contentType: 'collection',
-            });
-        });
         filters = uniqBy(filters, f => `${f.name}${f.value}`);
-        filters = orderBy(filters, ['name', 'value']);
+        filters = orderBy(filters, ["name", "value"]);
         const filterTypes = uniq(filters.map(f => f.type));
         let f = [];
         for (let type of filterTypes) {
@@ -165,27 +155,23 @@ export async function loadData() {
                             value: {
                                 type: type,
                                 value: f.value,
-                                label: `${capitalize(f.type)}: ${f.value}`,
-                            },
+                                label: `${capitalize(f.type)}: ${f.value}`
+                            }
                         };
-                    }),
+                    })
             });
         }
         return f;
-    }
-
-    function extractClassifications(classifications) {
-        return reduce(classifications);
     }
 }
 
 export function mapRepositoryRoot(path) {
     try {
         const root =
-            process.env.NODE_ENV === 'testing'
-                ? '/mobile-viewer/repository'
-                : '/repository';
-        return path.replace('/repository', root);
+            process.env.NODE_ENV === "testing"
+                ? "/mobile-viewer/repository"
+                : "/repository";
+        return path.replace("/repository", root);
     } catch (error) {
         return path;
     }

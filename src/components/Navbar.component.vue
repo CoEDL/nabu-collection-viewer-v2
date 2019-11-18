@@ -3,14 +3,6 @@
         <div :class="{ 'style-dropdown px-4': showLinks }">
             <div class="row py-2">
                 <div class="col">
-                    <!-- <span class="float-right inline-block md:hidden py-2">
-                        <span @click="showLinks = !showLinks">
-                            <i class="fas fa-bars style-hamburger"></i>
-                        </span>
-                    </span>-->
-                    <span class="hidden md:inline-block float-right">
-                        <content-filter v-if="menuItems.contentFilter" />
-                    </span>
                     <router-link :to="{ path: '/collections'}">
                         <el-button size="mini">
                             <i class="fas fa-layer-group"></i>
@@ -23,22 +15,20 @@
                             <span class="hidden md:inline-block">Browse All Items</span>
                         </el-button>
                     </router-link>
+                    <router-link to="/content-filter" class="float-right">
+                        <el-button size="mini">
+                            <i class="fas fa-search"></i>
+                            <span class="hidden md:inline-block">filter items and collections</span>
+                        </el-button>
+                    </router-link>
                 </div>
             </div>
-            <!-- <span v-if="showLinks">
-                <content-filter v-if="menuItems.contentFilter" />
-            </span>-->
         </div>
     </div>
 </template>
 
 <script>
-import ContentFilter from "./ContentFilter.component.vue";
-
 export default {
-    components: {
-        ContentFilter
-    },
     data() {
         return {
             watchers: {},

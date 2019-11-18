@@ -1,69 +1,56 @@
 <template>
-    <div class="inline">
-        <el-select
-            v-model="selectedFilter"
-            placeholder="Filter by..."
-            size="small"
-            class="style-select"
-            clearable
-            filterable
-            v-if="type === 'select'"
-        >
-            <el-option-group v-for="group in filters" :key="group.label" :label="group.label">
-                <el-option
-                    v-for="item in group.options"
-                    :key="item.label"
-                    :label="item.value.label"
-                    :value="item.value"
-                    :value-key="item.value.value"
+    <div class="flex flex-col align-content items-center">
+        <div
+            class="text-lg my-4"
+        >Apply one of the filters below to limit the collections and items shown.</div>
+        <div v-for="(group, grpIdx) in filters" :key="grpIdx" class="mb-2">
+            <div class="flex flex-col md:flex-row">
+                <div class="w-screen px-4 md:w-40 px-0">{{groupLabel(group)}}</div>
+                <el-select
+                    v-model="selectedFilter"
+                    :placeholder="groupLabel(group)"
+                    class="w-screen px-4 md:w-64"
+                    clearable
+                    filterable
                 >
-                    <span>{{ item.label }}</span>
-                </el-option>
-            </el-option-group>
-        </el-select>
-
-        <span v-if="type === 'overlay'">
-            <el-button @click="dialogVisible = !dialogVisible" size="mini">
-                <i class="fas fa-search"></i>
-                filter items and collections
-            </el-button>
-        </span>
-        <el-dialog
-            title="Filter by..."
-            :visible.sync="dialogVisible"
-            :fullscreen="true"
-            :modal="false"
-        >
-            <div class="my-4" v-if="selectedFilter">
-                Current filter: {{selectedFilter.label}}
-                <el-button @click="resetFilter" class="btn-block">
-                    <i class="fas fa-redo" data-fa-transform="flip-h"></i>
-                    remove filter
+                    <el-option
+                        v-for="item in group.options"
+                        :key="item.label"
+                        :label="item.value.label"
+                        :value="item.value"
+                        :value-key="item.value.value"
+                    >
+                        <div class="w-48" v-if="smallDevice">{{ item.label }}</div>
+                        <div v-else>{{ item.label }}</div>
+                    </el-option>
+                </el-select>
+            </div>
+        </div>
+        <div class="my-2">
+            <router-link :to="{ path: '/collections'}">
+                <el-button size="small" :disabled="!selectedFilter">
+                    <i class="fas fa-layer-group"></i>
+                    Browse Collections
                 </el-button>
-            </div>
-            <div
-                v-for="group in filters"
-                :key="group.label"
-                :label="group.label"
-                class="style-selections"
-            >
-                <div class="style-group-heading">{{group.label}}</div>
-                <div v-for="item in group.options" :key="item.label">
-                    <span @click="handleSelection(item.value)">{{ item.label }}</span>
-                </div>
-                <br />
-            </div>
-        </el-dialog>
+            </router-link>
+            <router-link :to="{ path: '/items'}">
+                <el-button size="small" :disabled="!selectedFilter">
+                    <i class="fas fa-folder-open"></i>
+                    Browse items
+                </el-button>
+            </router-link>
+
+            <el-button @click="resetFilter" class="my-4" :disabled="!selectedFilter" size="small">
+                <i class="fas fa-ban"></i>&nbsp;clear-filter
+            </el-button>
+        </div>
     </div>
 </template>
 
 <script>
 export default {
     data() {
-        return {
-            type: "select",
-            dialogVisible: false
-        };
+        return {};
     },
     computed: {
         filters: function() {
@@ -76,25 +63,20 @@ export default {
             set: function(value) {
                 this.$store.commit("setSelectedFilter", value || undefined);
             }
+        },
+        smallDevice: function() {
+            return window.innerWidth < 700 ? true : false;
         }
     },
-    beforeMount() {
-        window.addEventListener("resize", this.setType);
-        this.setType();
-    },
-    beforeDestroy() {
-        window.removeEventListener("resize", this.setType);
-    },
     methods: {
-        setType() {
-            this.type = window.innerWidth < 700 ? "overlay" : "select";
+        groupLabel: function(group) {
+            return `Filter by ${group.label}`;
         },
         handleSelection(item) {
             this.$store.commit("setSelectedFilter", item || undefined);
             this.dialogVisible = false;
         },
         resetFilter() {
-            console.log("reset filter");
             this.$store.commit("setSelectedFilter", undefined);
         }
     }
@@ -102,22 +84,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.style-select {
-    margin-top: -2px;
-    width: 100%;
-}
-@media only screen and (min-width: 600px) {
-    .style-select {
-        max-width: 500px;
-    }
-}
-
-.style-group-heading {
-    padding: 0 0 5px 0;
-    font-size: 1.2em;
-    border-bottom: 1px solid #ccc;
-}
-
 .style-selections {
     cursor: pointer;
 }
