@@ -10,8 +10,8 @@
                     v-model="selectedFilter"
                     :placeholder="groupLabel(group)"
                     class="w-screen px-4 md:w-64"
-                    clearable
-                    filterable
+                    :clearable="!smallDevice"
+                    :filterable="!smallDevice"
                 >
                     <el-option
                         v-for="item in group.options"
@@ -26,21 +26,24 @@
                 </el-select>
             </div>
         </div>
-        <div class="my-2">
+        <div class="my-2 flex flex-col md:flex-row">
             <router-link :to="{ path: '/collections'}">
-                <el-button size="small" :disabled="!selectedFilter">
+                <el-button class="my-1 md:mx-2 w-64 md:w-auto">
                     <i class="fas fa-layer-group"></i>
                     Browse Collections
                 </el-button>
             </router-link>
             <router-link :to="{ path: '/items'}">
-                <el-button size="small" :disabled="!selectedFilter">
+                <el-button class="my-1 md:mx-2 w-64 md:w-auto">
                     <i class="fas fa-folder-open"></i>
                     Browse items
                 </el-button>
             </router-link>
-
-            <el-button @click="resetFilter" class="my-4" :disabled="!selectedFilter" size="small">
+            <el-button
+                @click="resetFilter"
+                :disabled="!selectedFilter"
+                class="my-1 md:mx-2 w-64 md:w-auto"
+            >
                 <i class="fas fa-ban"></i>&nbsp;clear-filter
             </el-button>
         </div>
