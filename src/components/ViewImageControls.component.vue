@@ -1,6 +1,6 @@
 <template>
     <div>
-        <div class="controls-overlay fixed-bottom">
+        <div class="controls-overlay">
             <div class="flex flex-col">
                 <div>
                     <span @click="closeControls" class="p-2 float-right style-close">
@@ -110,29 +110,6 @@ export default {
 
 .style-control {
     cursor: pointer;
-}
-
-.style-title {
-    display: block;
-    font-size: 1em;
-}
-
-.style-image-name {
-    display: block;
-    font-size: 1em;
-}
-
-.style-controls {
-    font-size: 1.5em;
-}
-
-.style-control-text {
-    display: block;
-    font-size: 15px;
-}
-
-.style-close {
-    font-size: 2em;
 }
 </style>
 
