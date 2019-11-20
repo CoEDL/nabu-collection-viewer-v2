@@ -10,33 +10,43 @@
             <i class="fas fa-caret-down"></i>
         </el-button>
         <el-dialog :visible.sync="dialogVisible" :fullscreen="true" :modal="false">
-            <span class="style-item-information">
+            <span class="text-left text-black">
                 <div class="row py-2">
-                    <div class="col-12 col-md col-lg col-xl style-information-title">Title</div>
+                    <div class="col-12 col-md col-lg col-xl text-xl">Title</div>
                     <div class="col-12 col-md-10 col-lg-10 col-xl-10">{{item.title}}</div>
                 </div>
                 <div class="row py-2">
-                    <div class="col-12 col-md col-lg col-xl style-information-title">Date</div>
+                    <div class="col-12 col-md col-lg col-xl text-xl">Date</div>
                     <div class="col-12 col-md-10 col-lg-10 col-xl-10">{{item.date}}</div>
                 </div>
                 <div class="row py-2">
-                    <div class="col-12 col-md col-lg col-xl style-information-title">Metadata</div>
+                    <div class="col-12 col-md col-lg col-xl text-xl">Metadata</div>
                     <div
                         class="col-12 col-md-10 col-lg-10 col-xl-10"
                     >{{item.collectionId}} / {{item.itemId}}</div>
                 </div>
                 <div class="row py-2" v-if="speakers.length">
-                    <div class="col-12 col-md col-lg col-xl style-information-title">Speakers</div>
+                    <div class="col-12 col-md col-lg col-xl text-xl">Speakers</div>
                     <div class="col-12 col-md-10 col-lg-10 col-xl-10">
                         <div v-for="(speaker, idx) of speakers" :key="idx">{{speaker}}</div>
                     </div>
                 </div>
                 <div class="row py-2">
-                    <div class="col-12 col-md col-lg col-xl style-information-title">Description</div>
+                    <div class="col-12 col-md col-lg col-xl text-xl">Languages</div>
+                    <div class="col-12 col-md-10 col-lg-10 col-xl-10">
+                        <div v-for="(language, idx) of item.languages" :key="idx">{{language}}</div>
+                    </div>
+                </div>
+                <div class="row py-2">
+                    <div class="col-12 col-md col-lg col-xl text-xl">Region</div>
+                    <div class="col-12 col-md-10 col-lg-10 col-xl-10">{{item.region}}</div>
+                </div>
+                <div class="row py-2">
+                    <div class="col-12 col-md col-lg col-xl text-xl">Description</div>
                     <div class="col-12 col-md-10 col-lg-10 col-xl-10">{{item.description}}</div>
                 </div>
                 <div class="row py-2">
-                    <div class="col-12 col-md col-lg col-xl style-information-title">Citation</div>
+                    <div class="col-12 col-md col-lg col-xl text-xl">Citation</div>
                     <div class="col-12 col-md-10 col-lg-10 col-xl-10">{{item.citation}}</div>
                 </div>
             </span>
@@ -88,18 +98,6 @@ export default {
 
 .style-information-button {
     color: $background-color-dark;
-}
-
-.style-item-information {
-    text-align: left;
-    font-size: 20px;
-    letter-spacing: 1px;
-    color: $background-color-dark;
-}
-
-.style-information-title {
-    font-weight: 500;
-    font-size: 24px;
 }
 </style>
 

@@ -57,6 +57,7 @@ export async function loadData() {
                     people: item.people.map(s => s.name),
                     categories: item.categories,
                     languages: item.languages,
+                    region: item.region,
                     ...reduce(item.classifications)
                 };
             });
@@ -77,6 +78,7 @@ export async function loadData() {
                     people: item.people.map(s => s.name),
                     categories: item.categories,
                     languages: item.languages,
+                    region: item.region,
                     ...reduce(item.classifications)
                 };
             });
@@ -97,6 +99,7 @@ export async function loadData() {
                     people: item.people.map(s => s.name),
                     categories: item.categories,
                     languages: item.languages,
+                    region: item.region,
                     ...reduce(item.classifications)
                 };
             });
