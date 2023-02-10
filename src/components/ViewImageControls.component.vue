@@ -8,8 +8,8 @@
                     </span>
                 </div>
                 <div class="text-center">
-                    <span class="style-title">{{image.title}}</span>
-                    <span class="style-image-name">{{image.name}}</span>
+                    <span class="style-title">{{ image.title }}</span>
+                    <span class="style-image-name">{{ image.name }}</span>
                 </div>
 
                 <div class="flex flex-row flex-grow justify-center my-5">
@@ -42,18 +42,18 @@ import { findIndex } from "lodash";
 
 export default {
     props: {
-        image: Object
+        image: Object,
     },
     data() {
         return {
             disablePrevious: true,
-            disableNext: true
+            disableNext: true,
         };
     },
     watch: {
-        "image.name": function() {
+        "image.name": function () {
             this.toggleControls();
-        }
+        },
     },
     mounted() {
         this.toggleControls();
@@ -62,12 +62,11 @@ export default {
         toggleControls() {
             let item = this.$store.getters.item({
                 collectionId: this.image.collectionId,
-                itemId: this.image.itemId
+                itemId: this.image.itemId,
             });
             let imageIndex = findIndex(item.images, { name: this.image.name });
             this.disablePrevious = imageIndex === 0 ? true : false;
-            this.disableNext =
-                imageIndex < item.images.length - 1 ? false : true;
+            this.disableNext = imageIndex < item.images.length - 1 ? false : true;
         },
         closeControls() {
             this.$emit("toggle-controls");
@@ -89,29 +88,7 @@ export default {
         },
         end() {
             this.$emit("jump-to-end");
-        }
-    }
+        },
+    },
 };
 </script>
-
-<style lang="scss" scoped>
-@import "assets/global-styles.scss";
-
-.controls-overlay {
-    top: 0;
-    left: 0;
-    position: fixed;
-    padding: 0 15px;
-    width: 100vw;
-    z-index: 10000;
-    background-color: #ececec;
-    color: $background-color-dark;
-}
-
-.style-control {
-    cursor: pointer;
-}
-</style>
-
-
-

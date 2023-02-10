@@ -1,44 +1,15 @@
 <template>
-    <div class="flex flex-col my-2">
-        <div class="text-center">{{audio.name}}</div>
-        <div class="style-audio-icon">
-            <i class="fal fa-volume-up"></i>
-        </div>
-        <div class="my-2">
-            <audio controls ref="audioElement" class="style-audio-element inline-block">
-                <source :src="item" v-for="(item, idx) of audio.item" :key="idx" />Your browser does not support the
-                <code>audio</code> element.
-            </audio>
-        </div>
+    <div class="flex flex-col">
+        <div class="text-center">{{ props.audio.name }}</div>
+        <audio controls>
+            <source :src="props.audio.repositoryPath" />
+            Your browser does not support the <code>audio</code> element.
+        </audio>
     </div>
 </template>
 
-<script>
-import ItemInformation from "./ItemInformation.component.vue";
-
-export default {
-    props: {
-        audio: Object
-    },
-    components: {
-        ItemInformation
-    },
-    data() {
-        return {};
-    }
-};
+<script setup>
+const props = defineProps({
+    audio: Object,
+});
 </script>
-
-<style lang="scss" scoped>
-.style-audio-icon {
-    cursor: pointer;
-    font-size: 3em;
-}
-
-.style-audio-element {
-    width: 90%;
-}
-</style>
-
-
-

@@ -1,41 +1,22 @@
 <template>
     <div>
-        <navbar />
-        <router-view class="style-main-content-area m-4"></router-view>
+        <navbar class="sticky top-0 z-10" />
+        <router-view class="p-4" />
     </div>
 </template>
 
-<script>
-import { loadData } from "../data-loader.service";
-import { flattenDeep, includes, orderBy, debounce } from "lodash";
+<script setup>
 import Navbar from "./Navbar.component.vue";
+import { onMounted } from "vue";
+import { useRoute, useRouter } from "vue-router";
+import { useStore } from "vuex";
+const $route = useRoute();
+const $router = useRouter();
+const $store = useStore();
 
-export default {
-    components: {
-        Navbar
-    },
-    data() {
-        return {
-            watchers: {}
-        };
-    },
-    mounted() {
-        this.watchers.routeWatcher = this.$watch("$route.path", () => {
-            if (this.$route.path === "/")
-                this.$router.push({ path: "/collections" });
-        });
-        this.$store.dispatch("loadData");
-        if (this.$route.name === "root")
-            this.$router.push({ path: "/collections" });
-    },
-    beforeDestroy() {
-        this.watchers.routeWatcher();
-    }
-};
+onMounted(() => {
+    if ($route.path === "/") $router.push({ path: "/collections" });
+    if ($route.name === "root") $router.push({ path: "/collections" });
+    $store.dispatch("loadData");
+});
 </script>
-
-<style scoped lang="scss">
-.style-main-content-area {
-    margin-top: 50px;
-}
-</style>

@@ -1,46 +1,24 @@
 <template>
-    <el-card class="style-card" shadow="always">
-        <div slot="header" class="text-xl text-center my-2" v-if="item.title">{{item.title}}</div>
-        <div class="flex flex-col text-center">
-            <div>
-                {{item.collectionId}} / {{item.itemId}} /
-                <item-information :collectionId="item.collectionId" :itemId="item.itemId" />
+    <router-link :to="linkToItem()">
+        <el-card>
+            <template #header>
+                <div class="text-xl text-center my-2">{{ item.title }}</div>
+            </template>
+            <div class="flex flex-col text-center">
+                <div>{{ item.collectionId }} / {{ item.itemId }}</div>
+                <item-information :item="item" />
             </div>
-            <render-image :image="item" v-if="item.type === 'image'" />
-            <render-audio :audio="item" v-if="item.type === 'audio'" />
-            <render-video :video="item" v-if="item.type === 'video'" />
-        </div>
-    </el-card>
+        </el-card>
+    </router-link>
 </template>
 
-<script>
+<script setup>
 import ItemInformation from "./ItemInformation.component.vue";
-import RenderImage from "./RenderImage.component.vue";
-import RenderAudio from "./RenderAudio.component.vue";
-import RenderVideo from "./RenderVideo.component.vue";
 
-export default {
-    props: {
-        item: Object
-    },
-    components: {
-        ItemInformation,
-        RenderImage,
-        RenderAudio,
-        RenderVideo
-    },
-    data() {
-        return {
-            itemData: {}
-        };
-    }
-};
-</script>
-
-<style lang="scss" scoped>
-.style-card {
-    min-height: 250px;
+const props = defineProps({
+    item: Object,
+});
+function linkToItem() {
+    return `/${props.item.collectionId}/${props.item.itemId}`;
 }
-</style>
-
-
+</script>

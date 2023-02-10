@@ -1,65 +1,32 @@
 <template>
-    <div class="remove-padding m-2">
-        <el-pagination
-            :small="small"
-            layout="prev, pager,  next"
-            :page-size.sync="pageSize"
-            :current-page.sync="page"
-            :total="totalItems"
-        ></el-pagination>
-        <div v-for="(chunk, idx) of chunks" :key="idx">
-            <div class="flex flex-row items-center">
-                <div v-for="collection of chunk" :key="collection.collectionId" class="flex-1 m-1">
-                    <render-collection-component :collection="collection" />
-                </div>
-            </div>
+    <div class="flex flex-col space-y-4">
+        <ContentFilterComponent type="collections" />
+        <div v-for="collection of collections" :key="collection.collectionId">
+            <render-collection-component :collection="collection" />
         </div>
     </div>
 </template>
 
-<script>
-import { chunk } from "lodash";
-import Navbar from "./Navbar.component.vue";
+<script setup>
 import RenderCollectionComponent from "./RenderCollection.component.vue";
+import ContentFilterComponent from "./ContentFilter.component.vue";
+import { intersection } from "lodash";
+import { computed } from "vue";
+import { useStore } from "vuex";
+const $store = useStore();
 
-export default {
-    components: {
-        Navbar,
-        RenderCollectionComponent
-    },
-    data() {
-        return {
-            nChunks: 1,
-            page: 0,
-            pageSize: 10,
-            small: window.innerWidth < 400 ? true : false
-        };
-    },
-    computed: {
-        totalItems: function() {
-            return this.$store.state.collections.length;
-        },
-        chunks: function() {
-            if (window.innerWidth > 400 && window.innerWidth <= 1024) {
-                this.nChunks = 2;
-            } else if (window.innerWidth > 1024) {
-                this.nChunks = 3;
-                this.pageSize = 9;
-            }
-            let collections = this.$store.state.collections.slice(
-                (this.page - 1) * this.pageSize,
-                (this.page - 1) * this.pageSize + this.pageSize
-            );
-            return chunk(collections, this.nChunks);
-        }
-    }
-};
+let collections = computed(() => {
+    let filters = Object.keys($store.state.selectedFilters);
+    if (!filters.length) return $store.state.collections;
+    let collections = $store.state.collections.filter((collection) => {
+        let hasFilter = [
+            intersection(filters, collection.classifications).length ? true : false,
+            intersection(filters, collection.categories).length ? true : false,
+            intersection(filters, collection.people).length ? true : false,
+            intersection(filters, collection.languages).length ? true : false,
+        ];
+        return hasFilter.includes(true);
+    });
+    return collections;
+});
 </script>
-
-<style lang="scss" scoped>
-.remove-padding {
-    padding: 0;
-}
-</style>
-
-
